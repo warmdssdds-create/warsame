@@ -6,6 +6,7 @@ import signal
 import sys
 import time
 
+import numpy as np
 import structlog
 
 from bot.alerts import send_alert
@@ -90,7 +91,6 @@ def _tick(
     # Append a synthetic "current" candle from ticker for signal scoring
     # (full candles are refreshed via backfill at startup)
     if candles:
-        last_ts = candles[-1].timestamp
         arr = candles_to_arrays(candles)
         high = arr["high"]
         low = arr["low"]
@@ -134,7 +134,7 @@ def _tick(
     if live_pos is None and signal.direction != Direction.NONE:
         if signal.confluence >= cfg.risk.min_confluence:
             balance = fetch_account_balance(session)
-            atr_val = float(indicators["atr"][-1]) if not __import__("numpy").isnan(indicators["atr"][-1]) else None
+            atr_val = float(indicators["atr"][-1]) if not np.isnan(indicators["atr"][-1]) else None
             if atr_val and atr_val > 0 and balance > 0:
                 params = calculate_trade_params(
                     side=signal.direction.value,

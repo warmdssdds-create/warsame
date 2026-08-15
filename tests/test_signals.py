@@ -50,14 +50,10 @@ def test_signal_insufficient_data():
 
 
 def test_regime_filter_blocks_long_in_downtrend():
-    """A downtrending regime should block a LONG signal."""
+    """A downtrending regime must block a LONG signal."""
     high, low, close, volume = _make_data(trend="down")
     cfg = IndicatorConfig()
     indicators = compute_all(high, low, close, volume, cfg)
-    # Force a trending_down regime
     sig = score_signals(close, volume, indicators, Regime.TRENDING_DOWN, cfg)
-    # Long should be filtered
-    if sig.direction == Direction.LONG:
-        # This can happen only if the confluence was 0 after filter,
-        # which means the filter was applied
-        assert "regime_filter" in sig.reasons
+    # A TRENDING_DOWN regime should never allow a LONG entry
+    assert sig.direction != Direction.LONG

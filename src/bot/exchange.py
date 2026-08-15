@@ -32,6 +32,7 @@ def build_ws_session(
     return WebSocket(
         testnet=cfg.testnet,
         channel_type=channel_type,
+        on_message=on_message,
     )
 
 
